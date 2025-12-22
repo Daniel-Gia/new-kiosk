@@ -1,11 +1,12 @@
 #!/bin/bash
+# chmod +x setup.sh
 # setup/setup.sh - Installation & System Config
 
 echo "Installing Raspberry Pi OS Lite Kiosk (2025)..."
 
 # 1. Install packages
 sudo apt update && sudo apt upgrade -y
-sudo apt install --no-install-recommends labwc chromium-browser wlrctl curl grep -y
+sudo apt install --no-install-recommends labwc chromium wlrctl curl grep -y
 
 # 2. Configure Labwc as Wayland Compositor
 sudo raspi-config nonint do_wayland W2
