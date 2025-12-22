@@ -6,10 +6,10 @@ export WLR_NO_HARDWARE_CURSORS=1
 
 # Start Labwc and Chromium
 labwc -s "chromium \
+  --kiosk \
   --no-sandbox \
   --remote-debugging-port=9222 \
   --remote-allow-origins=* \
-  --start-maximized \
   --no-first-run \
   --noerrdialogs \
   --disable-infobars" &
