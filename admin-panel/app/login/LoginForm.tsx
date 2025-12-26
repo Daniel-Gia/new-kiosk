@@ -8,6 +8,8 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
     const [password, setPassword] = useState("");
     const [status, setStatus] = useState<string>("");
 
+    const safeCallbackUrl = callbackUrl.startsWith("/") ? callbackUrl : "/";
+
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setStatus("Signing in...");
@@ -16,7 +18,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
             username,
             password,
             redirect: false,
-            callbackUrl,
+            callbackUrl: safeCallbackUrl,
         });
 
         if (!res) {
@@ -29,7 +31,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
             return;
         }
 
-        window.location.href = res.url ?? callbackUrl;
+        window.location.assign(safeCallbackUrl);
     };
 
     return (
