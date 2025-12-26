@@ -7,6 +7,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 KIOSK_USER="${SUDO_USER:-pi}"
+
+echo "Kiosk will be set up for user: $KIOSK_USER"
+
 # KIOSK_HOME="$(eval echo "~$KIOSK_USER")"
 
 echo "Setting up the project..."
