@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DEFAULT_URL_FILE="$(dirname "$0")/default_url.txt"
+DEFAULT_URL_FILE="$(cd "$(dirname "$0")" && pwd)/../settings/default_url.txt"
 START_URL=""
 if [ -f "$DEFAULT_URL_FILE" ]; then
   # Read first line
