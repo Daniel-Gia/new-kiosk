@@ -26,35 +26,17 @@ chmod +x "$SCRIPT_DIR/start_browser.sh" "$SCRIPT_DIR/go.sh"
 
 # Run kiosk on boot
 SERVICE_PATH="/etc/systemd/system/new-kiosk.service"
+TEMPLATE_PATH="$SCRIPT_DIR/new-kiosk.service"
 
-sudo tee "$SERVICE_PATH" > /dev/null <<EOF
-[Unit]
-Description=Kiosk Browser Service
-After=systemd-logind.service network-online.target
-Wants=network-online.target
-Conflicts=getty@tty1.service
+if [ ! -f "$TEMPLATE_PATH" ]; then
+	echo "Missing unit template: $TEMPLATE_PATH"
+	exit 1
+fi
 
-[Service]
-Type=simple
-User=$KIOSK_USER
-WorkingDirectory=$SCRIPT_DIR
-Environment=XDG_RUNTIME_DIR=/run/user/%U
-Environment=WLR_NO_HARDWARE_CURSORS=1
-PAMName=login
-TTYPath=/dev/tty1
-TTYReset=yes
-TTYVHangup=yes
-TTYVTDisallocate=yes
-StandardInput=tty
-StandardOutput=journal
-StandardError=journal
-ExecStart=$SCRIPT_DIR/start_browser.sh
-Restart=always
-RestartSec=2
-
-[Install]
-WantedBy=multi-user.target
-EOF
+sudo sed \
+	-e "s|@KIOSK_USER@|$KIOSK_USER|g" \
+	-e "s|@SCRIPT_DIR@|$SCRIPT_DIR|g" \
+	"$TEMPLATE_PATH" | sudo tee "$SERVICE_PATH" > /dev/null
 
 sudo systemctl daemon-reload
 sudo systemctl enable new-kiosk.service
