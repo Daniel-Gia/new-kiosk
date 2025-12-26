@@ -12,6 +12,8 @@ services:
     environment:
       DEFAULT_URL_FILE: /settings/default_url.txt
       CHROME_REMOTE_URL: http://127.0.0.1:9222
+      AUTH_FILE: /settings/auth.json
+      NEXTAUTH_SECRET: ${a3e58d885e26f84ed476aecf56d3e86301863ef2802f39f68c4470c852c42c8b}
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
 

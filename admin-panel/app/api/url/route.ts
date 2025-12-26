@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { getToken } from "next-auth/jwt";
 
 export const runtime = "nodejs"; //just to be safe
 
@@ -17,7 +19,11 @@ const readCurrentUrl = async (): Promise<string> => {
     }
 };
 
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) {
+        return NextResponse.json<{ error: string }>({ error: "Unauthorized" }, { status: 401 });
+    }
     const url = await readCurrentUrl();
     return NextResponse.json<{ url: string }>({ url }, { status: 200 });
 };
@@ -43,7 +49,11 @@ const openUrlInChromium = async (url: string): Promise<void> => {
     }
 };
 
-export const POST = async (req: Request) => {
+export const POST = async (req: NextRequest) => {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) {
+        return NextResponse.json<{ error: string }>({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await req.json().catch(() => null);
     if (!body || typeof body.url !== "string") {
         return NextResponse.json<{ error: string }>({ error: "Invalid request body." }, { status: 400 });
