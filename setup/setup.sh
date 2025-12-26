@@ -8,39 +8,29 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 KIOSK_USER="${SUDO_USER:-pi}"
 
-echo "Kiosk will be set up for user: $KIOSK_USER"
+echo -e "\e[33m Setting up the project... \e[0m"
 
-# KIOSK_HOME="$(eval echo "~$KIOSK_USER")"
+echo "1. Installing required packages..."
 
-echo "Setting up the project..."
-
-# 1. Install packages
 sudo apt update && sudo apt upgrade -y
 sudo apt install --no-install-recommends labwc chromium wlrctl curl grep -y
 
+echo "2. Configuring Raspberry Pi settings..."
+# Set up auto login
 sudo raspi-config nonint do_boot_behaviour B2
 
-# 2. Configure Labwc as Wayland Compositor
+# Set up Labwc as Wayland Compositor
 sudo raspi-config nonint do_wayland W2
 
-# 3. Configure Tiny Cursor (for invisibility)
-# sudo -u "$KIOSK_USER" mkdir -p "$KIOSK_HOME/.config/labwc"
-# sudo -u "$KIOSK_USER" tee "$KIOSK_HOME/.config/labwc/rc.xml" > /dev/null <<EOF
-# <core>
-#   <cursor>
-#     <size>1</size>
-#   </cursor>
-# </core>
-# EOF
-
-# 4. Ensure scripts are executable
+# Ensure scripts are executable
 chmod +x "$SCRIPT_DIR/start_browser.sh" "$SCRIPT_DIR/go.sh"
 
-# 5. Run kiosk on boot via systemd (runs labwc + chromium on tty1)
+# Run kiosk on boot
 SERVICE_PATH="/etc/systemd/system/new-kiosk.service"
+
 sudo tee "$SERVICE_PATH" > /dev/null <<EOF
 [Unit]
-Description=New Kiosk (Labwc + Chromium)
+Description=Kiosk Browser Service
 After=systemd-logind.service network-online.target
 Wants=network-online.target
 Conflicts=getty@tty1.service
@@ -59,7 +49,7 @@ TTYVTDisallocate=yes
 StandardInput=tty
 StandardOutput=journal
 StandardError=journal
-ExecStart=$SCRIPT_DIR/start_browser.sh --systemd
+ExecStart=$SCRIPT_DIR/start_browser.sh
 Restart=always
 RestartSec=2
 

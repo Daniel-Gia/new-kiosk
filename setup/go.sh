@@ -8,7 +8,6 @@ if [ -z "$NEW_URL" ]; then
     exit 1
 fi
 
-# Open the new URL in a clean tab
 curl -s -X PUT "http://localhost:9222/json/new?$NEW_URL" > /dev/null
 
 echo "Display updated to: $NEW_URL"
