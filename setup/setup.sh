@@ -8,9 +8,8 @@ REPO_DIR="$(cd "$SETUP_DIR/.." && pwd)"
 
 echo "== New Kiosk: root setup =="
 
-echo "1) Installing Docker + Compose plugin..."
-sudo apt update -y
-sudo apt install -y docker.io docker-compose-plugin
+echo "1) Installing Docker using the official Docker installation script..."
+curl -sSL https://get.docker.com | sh
 
 echo "2) Enabling Docker daemon..."
 sudo systemctl enable --now docker
