@@ -1,5 +1,4 @@
 #!/bin/bash
-# setup/go.sh - Remote URL Control
 
 NEW_URL=$1
 

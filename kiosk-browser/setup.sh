@@ -1,6 +1,5 @@
 #!/bin/bash
 # chmod +x setup.sh
-# setup/setup.sh
 
 set -euo pipefail
 
