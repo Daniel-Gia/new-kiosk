@@ -1,34 +1,34 @@
 #!/bin/bash
 # chmod +x setup.sh
-# setup/setup.sh - Installation & System Config
+# setup/setup.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 KIOSK_USER="${SUDO_USER:-pi}"
-KIOSK_HOME="$(eval echo "~$KIOSK_USER")"
+# KIOSK_HOME="$(eval echo "~$KIOSK_USER")"
 
-echo "Installing Raspberry Pi OS Lite Kiosk (2025)..."
+echo "Setting up the project..."
 
 # 1. Install packages
 sudo apt update && sudo apt upgrade -y
 sudo apt install --no-install-recommends labwc chromium wlrctl curl grep -y
 
-# sudo raspi-config nonint do_boot_behaviour B2
+sudo raspi-config nonint do_boot_behaviour B2
 
 # 2. Configure Labwc as Wayland Compositor
 sudo raspi-config nonint do_wayland W2
 
 # 3. Configure Tiny Cursor (for invisibility)
-sudo -u "$KIOSK_USER" mkdir -p "$KIOSK_HOME/.config/labwc"
-sudo -u "$KIOSK_USER" tee "$KIOSK_HOME/.config/labwc/rc.xml" > /dev/null <<EOF
-<core>
-  <cursor>
-    <size>1</size>
-  </cursor>
-</core>
-EOF
+# sudo -u "$KIOSK_USER" mkdir -p "$KIOSK_HOME/.config/labwc"
+# sudo -u "$KIOSK_USER" tee "$KIOSK_HOME/.config/labwc/rc.xml" > /dev/null <<EOF
+# <core>
+#   <cursor>
+#     <size>1</size>
+#   </cursor>
+# </core>
+# EOF
 
 # 4. Ensure scripts are executable
 chmod +x "$SCRIPT_DIR/start_browser.sh" "$SCRIPT_DIR/go.sh"
