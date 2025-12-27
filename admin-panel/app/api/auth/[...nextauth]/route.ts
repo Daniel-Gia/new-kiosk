@@ -9,17 +9,31 @@ type AuthFile = {
     passwordHash: string;
 };
 
-const readAuthEnv = (): AuthFile | null => {
-    const username = process.env["ADMIN_PANEL_USER"] ?? process.env.ADMIN_PANEL_USER;
+const normalizeBcryptHash = (hash: string): string => {
+    // Some tools (e.g., htpasswd) output $2y$ hashes.
+    // Many bcrypt implementations treat $2y$ as compatible with $2b$.
+    return hash.replace(/^\$2y\$/, "$2b$");
+};
 
-    const passwordHash = process.env["ADMIN_PANEL_PASS_HASH"] ?? process.env.ADMIN_PANEL_PASS_HASH;
+const readAuthEnv = (): AuthFile | null => {
+    const username =
+        process.env.ADMIN_PANEL_USERNAME ??
+        process.env["ADMIN_PANEL_USERNAME"] ??
+        process.env.ADMIN_PANEL_USER ??
+        process.env["ADMIN_PANEL_USER"];
+
+    const passwordHash =
+        process.env.ADMIN_PANEL_PASSWORD_HASH ??
+        process.env["ADMIN_PANEL_PASSWORD_HASH"] ??
+        process.env.ADMIN_PANEL_PASS_HASH ??
+        process.env["ADMIN_PANEL_PASS_HASH"];
 
     if (typeof username !== "string" || username.trim() === "") return null;
     if (typeof passwordHash !== "string" || passwordHash.trim() === "") return null;
 
     return {
         username: username.trim(),
-        passwordHash: passwordHash.trim(),
+        passwordHash: normalizeBcryptHash(passwordHash.trim()),
     };
 };
 

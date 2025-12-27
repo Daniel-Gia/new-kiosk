@@ -37,6 +37,9 @@ fi
 # Use an empty username; we only need the hash after ':'
 PASSWORD_HASH="$(htpasswd -bnBC 10 "" "$PASSWORD" | cut -d: -f2 | tr -d '\r\n')"
 
+# Some generators output "$2y$" hashes; normalize for broad compatibility.
+PASSWORD_HASH="$(printf '%s' "$PASSWORD_HASH" | sed 's/^\$2y\$/\$2b\$/')"
+
 # Write .env (Docker Compose loads it automatically from the project directory).
 # Use restrictive permissions when possible.
 {
