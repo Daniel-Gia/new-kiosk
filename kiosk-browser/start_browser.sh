@@ -14,6 +14,17 @@ if [ -z "$START_URL" ]; then
   START_URL="https://www.google.com"
 fi
 
+# Wait for local server if needed
+if [[ "$START_URL" == *"localhost"* ]] || [[ "$START_URL" == *"127.0.0.1"* ]]; then
+  echo "Waiting for local server..."
+  for i in {1..30}; do
+    if curl -s --head "$START_URL" >/dev/null || wget -q --spider "$START_URL"; then
+      break
+    fi
+    sleep 1
+  done
+fi
+
 CHROMIUM_CMD="chromium \
   --ozone-platform=wayland \
   --enable-features=UseOzonePlatform \
