@@ -1,7 +1,5 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import bcrypt from "bcryptjs";
 
 export const runtime = "nodejs";
@@ -11,20 +9,18 @@ type AuthFile = {
     passwordHash: string;
 };
 
-const AUTH_FILE_PATH =
-    process.env.AUTH_FILE ?? path.join(process.cwd(), "..", "settings", "auth.json");
+const readAuthEnv = (): AuthFile | null => {
+    const username = process.env["ADMIN_PANEL_USER"] ?? process.env.ADMIN_PANEL_USER;
 
-const readAuthFile = async (): Promise<AuthFile | null> => {
-    try {
-        const raw = await readFile(AUTH_FILE_PATH, "utf8");
-        const parsed = JSON.parse(raw) as Partial<AuthFile>;
-        if (typeof parsed.username !== "string" || typeof parsed.passwordHash !== "string") {
-            return null;
-        }
-        return { username: parsed.username, passwordHash: parsed.passwordHash };
-    } catch {
-        return null;
-    }
+    const passwordHash = process.env["ADMIN_PANEL_PASS_HASH"] ?? process.env.ADMIN_PANEL_PASS_HASH;
+
+    if (typeof username !== "string" || username.trim() === "") return null;
+    if (typeof passwordHash !== "string" || passwordHash.trim() === "") return null;
+
+    return {
+        username: username.trim(),
+        passwordHash: passwordHash.trim(),
+    };
 };
 
 const handler = NextAuth({
@@ -42,7 +38,7 @@ const handler = NextAuth({
                 const username = (credentials?.username ?? "").toString();
                 const password = (credentials?.password ?? "").toString();
 
-                const auth = await readAuthFile();
+                const auth = readAuthEnv();
                 if (!auth) return null;
 
                 if (username !== auth.username) return null;

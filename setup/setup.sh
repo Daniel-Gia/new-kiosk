@@ -8,6 +8,10 @@ REPO_DIR="$(cd "$SETUP_DIR/.." && pwd)"
 
 echo "== New Kiosk: root setup =="
 
+echo "0) Installing required packages (openssl, htpasswd)..."
+sudo apt-get update
+sudo apt-get install -y openssl apache2-utils
+
 if ! command -v docker &> /dev/null; then
     echo "1) Installing Docker using the official Docker installation script..."
     curl -sSL https://get.docker.com | sh
@@ -15,12 +19,15 @@ else
     echo "1) Docker is already installed. Skipping installation."
 fi
 
-echo "2) Enabling Docker daemon..."
+echo "2) Enabling Docker..."
 sudo systemctl enable --now docker
 
 echo "3) Running kiosk-browser setup..."
 chmod +x "$REPO_DIR/kiosk-browser/setup.sh"
 "$REPO_DIR/kiosk-browser/setup.sh"
+
+echo "3b) Making generate-admin-login.sh executable..."
+chmod +x "$REPO_DIR/setup/generate-admin-login.sh"
 
 echo "4) Installing admin-panel docker compose systemd service..."
 SERVICE_PATH="/etc/systemd/system/new-kiosk-admin.service"

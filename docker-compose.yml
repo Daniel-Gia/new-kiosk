@@ -2,20 +2,19 @@ services:
   admin-panel:
     image: danielgiacobelli/new-kiosk-admin-panel:latest
     pull_policy: always
-
     restart: unless-stopped
-
-    # Required so the container can reach Chromium DevTools on 127.0.0.1:9222
-    # (Chromium typically binds DevTools to localhost only)
     network_mode: host
 
     environment:
       DEFAULT_URL_FILE: /settings/default_url.txt
       CHROME_REMOTE_URL: http://127.0.0.1:9222
-      AUTH_FILE: /settings/auth.json
-      NEXTAUTH_SECRET: a3e58d885e26f84ed476aecf56d3e86301863ef2802f39f68c4470c852c42c8b
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
+
+      # Admin panel login (bcrypt hash)
+      ADMIN_PANEL_USERNAME: ${ADMIN_PANEL_USERNAME}
+      ADMIN_PANEL_PASSWORD_HASH: ${ADMIN_PANEL_PASSWORD_HASH}
 
     volumes:
       - ./settings:/settings
