@@ -9,12 +9,6 @@ type AuthFile = {
     passwordHash: string;
 };
 
-const normalizeBcryptHash = (hash: string): string => {
-    // Some tools (e.g., htpasswd) output $2y$ hashes.
-    // Many bcrypt implementations treat $2y$ as compatible with $2b$.
-    return hash.replace(/^\$2y\$/, "$2b$");
-};
-
 const readAuthEnv = (): AuthFile | null => {
     const username =
         process.env.ADMIN_PANEL_USERNAME ??
@@ -33,7 +27,7 @@ const readAuthEnv = (): AuthFile | null => {
 
     return {
         username: username.trim(),
-        passwordHash: normalizeBcryptHash(passwordHash.trim()),
+        passwordHash: passwordHash.trim(),
     };
 };
 
