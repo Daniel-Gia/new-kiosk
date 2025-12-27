@@ -40,6 +40,10 @@ PASSWORD_HASH="$(htpasswd -bnBC 10 "" "$PASSWORD" | cut -d: -f2 | tr -d '\r\n')"
 # Some generators output "$2y$" hashes; normalize for broad compatibility.
 PASSWORD_HASH="$(printf '%s' "$PASSWORD_HASH" | sed 's/^\$2y\$/\$2b\$/')"
 
+# Escape "$" to "$$" so Docker Compose doesn't try to interpolate the hash as variables.
+# (e.g. $2b$10$Abc... -> $$2b$$10$$Abc...)
+PASSWORD_HASH="$(printf '%s' "$PASSWORD_HASH" | sed 's/\$/\$\$/g')"
+
 # Write .env (Docker Compose loads it automatically from the project directory).
 # Use restrictive permissions when possible.
 {
